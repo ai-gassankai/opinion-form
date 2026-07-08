@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医療法人社団 月山会 報告システム</title>
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans JP for refined typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f0ebf8; /* Google Forms default light purple-grey background */
+        }
+        /* Custom smooth scrollbar for modern looks */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Custom animation for steps */
+        .step-transition {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- Header Area -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-notes-medical text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 tracking-tight text-sm md:text-base">医療法人社団 月山会</h1>
+                    <p class="text-xs text-slate-500 font-medium">ご意見・報告システム</p>
+                </div>
+            </div>
+            
+            <!-- Admin Dashboard Toggle Button with lock icon -->
+            <button id="adminToggleBtn" onclick="openPasscodeModal()" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs transition duration-200">
+                <i class="fa-solid fa-lock text-indigo-600"></i>
+                <span>管理設定・履歴</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Intranet Banner Notice -->
+    <div class="bg-indigo-900 text-white text-xs py-2 px-4 shadow-inner">
+        <div class="max-w-3xl mx-auto flex items-center justify-between">
+            <span class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-medium">月山会 院内イントラサイト連携中</span>
+            </span>
+            <span class="text-[10px] text-indigo-200 hidden md:inline">※本システムはイントラネットポータルから直接アクセス可能です。</span>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-3xl w-full mx-auto px-3 py-4 md:py-8 flex flex-col space-y-4">
+        
+        <!-- Progress Steps Indicator -->
+        <div id="progressContainer" class="w-full bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-400 px-1 mb-2">
+                <span id="stepLabel1" class="text-indigo-600">1. 医院選択</span>
+                <span id="stepLabel2">2. 氏名選択</span>
+                <span id="stepLabel3">3. ご意見入力</span>
+                <span id="stepLabel4">4. 送信確認</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div id="progressBar" class="bg-indigo-600 h-full w-1/4 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- Step 1: Branch Selection Card -->
+        <div id="step1" class="step-transition block">
+            <div class="bg-white rounded-2xl border-t-8 border-t-indigo-600 border border-slate-200 shadow-sm p-6 space-y-6">
+                <div class="text-center space-y-2">
+                    <span class="inline-block bg-indigo-50 text-indigo-700 text-xs px-3 py-1 rounded-full font-bold">STEP 1</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900">所属している医院を選択してください</h2>
+                    <p class="text-sm text-slate-500">該当するクリニックを選択すると自動的に名簿が切り替わります。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                    <!-- Yamagata Branch Card -->
+                    <button onclick="selectClinic('山形院')" class="group relative bg-white border-2 border-slate-150 hover:border-indigo-500 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-200 flex flex-col items-center justify-center space-y-3">
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-mountain text-xl"></i>
+                        </div>
+                        <span class="font-bold text-lg text-slate-800">山形院</span>
+                        <p class="text-xs text-slate-400">Yamagata Clinic</p>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition duration-200 text-indigo-500">
+                            <i class="fa-solid fa-circle-arrow-right text-lg"></i>
+                        </div>
+                    </button>
+
+                    <!-- Tokorozawa Branch Card -->
+                    <button onclick="selectClinic('所沢院')" class="group relative bg-white border-2 border-slate-150 hover:border-indigo-500 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-200 flex flex-col items-center justify-center space-y-3">
+                        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-tree text-xl"></i>
+                        </div>
+                        <span class="font-bold text-lg text-slate-800">所沢院</span>
+                        <p class="text-xs text-slate-400">Tokorozawa Clinic</p>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition duration-200 text-indigo-500">
+                            <i class="fa-solid fa-circle-arrow-right text-lg"></i>
+                        </div>
+                    </button>
+
+                    <!-- Sendai Branch Card -->
+                    <button onclick="selectClinic('仙台院')" class="group relative bg-white border-2 border-slate-150 hover:border-indigo-500 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-200 flex flex-col items-center justify-center space-y-3">
+                        <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-city text-xl"></i>
+                        </div>
+                        <span class="font-bold text-lg text-slate-800">仙台院</span>
+                        <p class="text-xs text-slate-400">Sendai Clinic</p>
+                        <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition duration-200 text-indigo-500">
+                            <i class="fa-solid fa-circle-arrow-right text-lg"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Staff Name Selection -->
+        <div id="step2" class="step-transition hidden">
+            <div class="bg-white rounded-2xl border-t-8 border-t-indigo-600 border border-slate-200 shadow-sm p-6 space-y-6">
+                <div class="text-center space-y-2">
+                    <span class="inline-block bg-indigo-50 text-indigo-700 text-xs px-3 py-1 rounded-full font-bold">STEP 2</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900"><span id="selectedClinicHeader" class="text-indigo-600"></span> 職員選択</h2>
+                    <p class="text-sm text-slate-500">お名前を選択してください。</p>
+                </div>
+
+                <!-- Live search bar for many staff members -->
+                <div class="relative max-w-md mx-auto">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="staffSearchInput" oninput="filterStaff()" placeholder="名前で検索..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                </div>
+
+                <!-- Dynamic Name List Grid -->
+                <div id="staffListGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 pt-2">
+                    <!-- Javascript injection -->
+                </div>
+
+                <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                    <button onclick="goToStep(1)" class="flex items-center space-x-2 text-slate-500 hover:text-slate-800 font-semibold text-sm transition py-2 px-4 rounded-lg hover:bg-slate-50">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>医院選択に戻る</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Custom Form Entry (Matches screen design) -->
+        <div id="step3" class="step-transition hidden space-y-4">
+            
+            <!-- Quick Context Header -->
+            <div class="bg-indigo-50 border border-indigo-150 rounded-2xl p-4 flex items-center justify-between text-xs md:text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-indigo-600 text-white font-bold px-2 py-0.5 rounded text-[10px]">選択中</span>
+                    <span class="text-slate-500">医院:</span>
+                    <span id="summaryClinic" class="font-bold text-slate-800"></span>
+                    <span class="text-slate-300">|</span>
+                    <span class="text-slate-500">氏名:</span>
+                    <span id="summaryName" class="font-bold text-indigo-700"></span>
+                </div>
+                <button onclick="goToStep(2)" class="text-indigo-600 hover:text-indigo-800 font-bold transition text-xs">変更する</button>
+            </div>
+
+            <!-- Dynamic Form Questions injected here -->
+            <form id="reportingForm" class="space-y-4">
+                <!-- Injected from Javascript renderCustomFields() -->
+            </form>
+
+            <!-- Static Thank You Card (Matches screenshot-2 bottom) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-2">
+                <h4 class="font-bold text-slate-900 text-base">【感謝】</h4>
+                <p class="text-sm text-slate-700">貴重なご意見を頂戴しありがとうございます！またよろしくお願いします！</p>
+            </div>
+
+            <!-- Action Controllers Row (Matches Screenshot-2 layout) -->
+            <div class="flex items-center justify-between pt-4 pb-12">
+                <button onclick="validateAndGoToReview()" class="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold px-6 py-3 rounded-xl shadow-md transition duration-200 flex items-center space-x-2 text-sm md:text-base">
+                    <span>送信内容を確認する</span>
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+
+                <button onclick="confirmClearForm()" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm md:text-base transition py-2 px-4 rounded-lg hover:bg-white/50">
+                    フォームをクリア
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Final Confirmation Screen -->
+        <div id="step4" class="step-transition hidden">
+            <div class="bg-white rounded-2xl border-t-8 border-t-indigo-600 border border-slate-200 shadow-sm p-6 md:p-8 space-y-6">
+                <div class="text-center space-y-2">
+                    <span class="inline-block bg-indigo-50 text-indigo-700 text-xs px-3 py-1 rounded-full font-bold">STEP 4</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900">ご意見の送信確認</h2>
+                    <p class="text-sm text-slate-500">以下の内容で間違いがなければ「この内容で送信する」を押してください。</p>
+                </div>
+
+                <!-- Review Fields Summary Grid -->
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <tbody>
+                            <tr class="border-b border-slate-150">
+                                <th class="w-1/3 p-4 bg-slate-100 font-bold text-slate-700 border-r border-slate-200">所属医院</th>
+                                <td id="reviewClinic" class="p-4 font-semibold text-slate-900"></td>
+                            </tr>
+                            <tr class="border-b border-slate-150">
+                                <th class="p-4 bg-slate-100 font-bold text-slate-700 border-r border-slate-200">職員氏名</th>
+                                <td id="reviewName" class="p-4 font-semibold text-indigo-700"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="dynamicReviewBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex items-center justify-between pt-6 border-t border-slate-200">
+                    <button onclick="goToStep(3)" class="flex items-center space-x-2 text-slate-500 hover:text-slate-800 font-semibold text-sm transition py-2 px-4 rounded-lg hover:bg-slate-50">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>修正する</span>
+                    </button>
+
+                    <button onclick="submitForm()" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-emerald-100 hover:shadow-emerald-200 transition duration-200">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>この内容で送信する</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Success Screen -->
+        <div id="step5" class="step-transition hidden">
+            <div class="bg-white rounded-2xl border-t-8 border-t-emerald-500 border border-slate-200 shadow-sm p-8 text-center space-y-6 max-w-md mx-auto">
+                <div class="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-4xl">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold text-slate-900">ご意見ありがとうございます</h2>
+                    <p class="text-sm text-slate-500">貴重なご意見を正常に受け付けました。<br>本日もお疲れ様でした！</p>
+                </div>
+                <button onclick="resetForm()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold py-3 rounded-xl transition duration-200 shadow-md">
+                    新しいご意見を送信する
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading overlay for cloud transmission -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 flex flex-col items-center space-y-4 shadow-2xl max-w-xs w-full text-center">
+            <div class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <div>
+                <h4 class="font-bold text-slate-800 text-sm">データをクラウドへ送信中</h4>
+                <p class="text-xs text-slate-400 mt-1">スプレッドシートへの書き込み処理を実行しています。画面をそのままにしてください。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Passcode Gate Modal -->
+    <div id="passcodeModal" class="fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 animate-in fade-in zoom-in duration-200">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-xl shadow-inner">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="font-bold text-slate-900 text-lg">セキュリティロック</h3>
+                <p class="text-xs text-slate-500">管理者用パスコードを入力してください。<br><span class="text-slate-400 font-medium">(初期暗証番号: 1234)</span></p>
+            </div>
+
+            <div class="space-y-3">
+                <input type="password" id="adminPasscodeInput" maxlength="12" placeholder="パスコードを入力" class="w-full text-center tracking-widest text-lg p-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-indigo-600 focus:outline-none transition font-mono">
+                <div id="passcodeError" class="text-rose-600 text-xs font-semibold text-center hidden">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> パスコードが正しくありません。
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="closePasscodeModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-sm transition">
+                    キャンセル
+                </button>
+                <button onclick="verifyPasscode()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition">
+                    解除する
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Settings & Submissions Dashboard Panel (Modal overlay) -->
+    <div id="adminPanel" class="fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <!-- Admin Header -->
+            <div class="p-6 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                        <i class="fa-solid fa-gears text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-900">管理者ダッシュボード</h2>
+                        <p class="text-xs text-slate-500">所属職員リストの編集、フォーム項目の追加・削除、送信されたご意見履歴の確認を行います。</p>
+                    </div>
+                </div>
+                <button onclick="toggleAdminPanel()" class="w-10 h-10 bg-slate-200 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-600 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Dashboard Navigation Tabs -->
+            <div class="flex border-b border-slate-150 bg-slate-50 px-4 overflow-x-auto whitespace-nowrap">
+                <button id="tabBtnStaff" onclick="switchAdminTab('staff')" class="border-b-2 border-indigo-600 text-indigo-600 font-bold px-4 py-3 text-sm flex items-center space-x-2 transition">
+                    <i class="fa-solid fa-users"></i>
+                    <span>名簿管理</span>
+                </button>
+                <button id="tabBtnFields" onclick="switchAdminTab('fields')" class="border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-semibold px-4 py-3 text-sm flex items-center space-x-2 transition">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>項目カスタマイズ</span>
+                </button>
+                <button id="tabBtnSubmissions" onclick="switchAdminTab('submissions')" class="border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-semibold px-4 py-3 text-sm flex items-center space-x-2 transition">
+                    <i class="fa-solid fa-database"></i>
+                    <span>受信履歴確認</span>
+                </button>
+                <button id="tabBtnSecurity" onclick="switchAdminTab('security')" class="border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-semibold px-4 py-3 text-sm flex items-center space-x-2 transition">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>連携・セキュリティ設定</span>
+                </button>
+            </div>
+
+            <!-- Dashboard Panels Container -->
+            <div class="flex-grow overflow-y-auto p-6">
+                
+                <!-- Tab: Staff List Editor -->
+                <div id="tabPanelStaff" class="space-y-6">
+                    <div class="bg-indigo-50 text-indigo-800 rounded-xl p-4 text-xs flex items-start space-x-3">
+                        <i class="fa-solid fa-circle-info mt-0.5 text-base"></i>
+                        <div>
+                            <span class="font-bold">名簿の変更手順:</span> 各医院エリアのテキストボックスに、名前を<strong>「1行に1人」</strong>入力してください。空行は自動的に除外されます。編集が完了したら右下の「名簿を保存する」ボタンを押してください。
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Yamagata List -->
+                        <div class="space-y-2">
+                            <label class="block font-bold text-slate-700 text-sm flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>山形院 職員リスト (仮登録)</span>
+                            </label>
+                            <textarea id="staffListYamagata" rows="12" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm leading-relaxed font-medium" placeholder="山形 太郎&#10;山形 次郎&#10;山形 三郎"></textarea>
+                        </div>
+
+                        <!-- Tokorozawa List -->
+                        <div class="space-y-2">
+                            <label class="block font-bold text-slate-700 text-sm flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <span>所沢院 職員リスト (仮登録)</span>
+                            </label>
+                            <textarea id="staffListTokorozawa" rows="12" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm leading-relaxed font-medium" placeholder="所沢 一郎&#10;所沢 二郎&#10;所沢 三郎"></textarea>
+                        </div>
+
+                        <!-- Sendai List -->
+                        <div class="space-y-2">
+                            <label class="block font-bold text-slate-700 text-sm flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                                <span>仙台院 職員リスト (仮登録)</span>
+                            </label>
+                            <textarea id="staffListSendai" rows="12" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm leading-relaxed font-medium" placeholder="仙台 太郎&#10;仙台 次郎&#10;仙台 三郎"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t border-slate-100">
+                        <button onclick="saveStaffLists()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition duration-200 flex items-center space-x-2 text-sm">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>名簿を保存する</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab: Fields Customizer -->
+                <div id="tabPanelFields" class="space-y-6 hidden">
+                    <div class="bg-indigo-50 text-indigo-800 rounded-xl p-4 text-xs flex items-start space-x-3">
+                        <i class="fa-solid fa-circle-info mt-0.5 text-base"></i>
+                        <div>
+                            <span class="font-bold">入力項目カスタマイズ:</span> Googleフォーム側の質問内容やレイアウト変更に応じて、本システム上でも自由に入力項目を編集できます。一覧の「<i class="fa-solid fa-pen-to-square"></i>」を押すと質問名や選択肢を上書き修正できます。
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Add New Question Box -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-4 h-fit">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-plus text-indigo-600"></i>
+                                <span>新規項目の追加</span>
+                            </h3>
+                            
+                            <div class="space-y-1">
+                                <label class="block text-xs font-semibold text-slate-500">質問のタイトル (必須)</label>
+                                <input type="text" id="newFieldLabel" placeholder="例: 気付いた点など" class="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="block text-xs font-semibold text-slate-500">回答形式</label>
+                                <select id="newFieldType" onchange="toggleOptionsInput()" class="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                                    <option value="textarea">長い回答 (複数行テキスト)</option>
+                                    <option value="text">短い回答 (単一行テキスト)</option>
+                                    <option value="checkbox">チェックボックス (複数選択)</option>
+                                    <option value="select">プルダウン (選択肢から1つ)</option>
+                                    <option value="radio">ラジオボタン (選択肢から1つ)</option>
+                                    <option value="date">日付</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="flex items-center space-x-2 cursor-pointer mt-2">
+                                    <input type="checkbox" id="newFieldRequired" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                                    <span class="text-xs font-semibold text-slate-500">この質問への回答を必須にする</span>
+                                </label>
+                            </div>
+
+                            <div id="newFieldOptionsContainer" class="space-y-1 hidden">
+                                <label class="block text-xs font-semibold text-slate-500">選択肢 (カンマ「,」区切り)</label>
+                                <textarea id="newFieldOptions" rows="3" placeholder="高い,低い" class="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none"></textarea>
+                            </div>
+
+                            <button onclick="addField()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition duration-200 flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>項目を追加する</span>
+                            </button>
+                        </div>
+
+                        <!-- Current Questions List -->
+                        <div class="md:col-span-2 space-y-3">
+                            <h3 class="font-bold text-slate-800 text-sm">現在の項目一覧とインライン直接編集</h3>
+                            <div id="fieldsListContainer" class="space-y-2">
+                                <!-- Injected from JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Submissions Logs -->
+                <div id="tabPanelSubmissions" class="space-y-6 hidden flex flex-col h-full">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-500 max-w-lg">
+                            <i class="fa-solid fa-info-circle text-indigo-500"></i>
+                            送信されたデータは本ブラウザの内部にもバックアップ蓄積されます。CSV形式で一括エクスポートし、GoogleスプレッドシートやExcelにコピー＆ペースト可能です。
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition duration-200 flex items-center space-x-2">
+                                <i class="fa-solid fa-file-excel"></i>
+                                <span>CSVエクスポート</span>
+                            </button>
+                            <button onclick="clearAllSubmissions()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs px-4 py-2.5 rounded-xl border border-rose-200 transition duration-200 flex items-center space-x-2">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>ローカル履歴を全削除</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submissions Table Container -->
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white max-h-[50vh] overflow-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10">
+                                <tr id="submissionsTableHead">
+                                    <th class="p-3 font-bold text-slate-600 border-r border-slate-200">送信日時</th>
+                                    <th class="p-3 font-bold text-slate-600 border-r border-slate-200">医院</th>
+                                    <th class="p-3 font-bold text-slate-600 border-r border-slate-200">氏名</th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissionsTableBody" class="divide-y divide-slate-100">
+                                <!-- JS items dynamic injection -->
+                            </tbody>
+                        </table>
+                        <div id="emptySubmissionsState" class="p-8 text-center text-slate-400 font-medium hidden">
+                            <i class="fa-solid fa-database text-3xl mb-2 block text-slate-300"></i>
+                            受信したご意見データはまだありません。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Security & Cloud Integration Settings -->
+                <div id="tabPanelSecurity" class="space-y-6 hidden">
+                    
+                    <!-- Google Spreadsheet Cloud Integration Panel -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+                        <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-lg"></i>
+                            <span>Googleスプレッドシート・リアルタイム自動連携設定</span>
+                        </h3>
+                        
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            この機能を設定すると、職員が送信を完了した際、管理者のGoogleスプレッドシート（クラウド）へ直接かつ自動的にデータが書き込まれます。
+                        </p>
+
+                        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-150 space-y-3">
+                            <h4 class="font-bold text-emerald-800 text-xs flex items-center space-x-1">
+                                <i class="fa-solid fa-clipboard-list text-sm"></i>
+                                <span>【3分で完了】Googleスプレッドシート連携手順</span>
+                            </h4>
+                            <ol class="list-decimal list-inside text-xs text-slate-700 space-y-2 leading-relaxed">
+                                <li>データを集約したいGoogleスプレッドシートを新規作成または用意します。</li>
+                                <li>上部メニューの <strong>「拡張機能」 ＞ 「Apps Script」</strong> を開きます。</li>
+                                <li>エディタに元々あるコードを全て削除し、以下の<strong>「GAS専用スクリプトコード」</strong>をコピーして貼り付け、上の保存アイコン（F5または💾）をクリックします。</li>
+                                <li>右上の <strong>「デプロイ」 ＞ 「新しいデプロイ」</strong> を選択します。</li>
+                                <li>種類の選択で「ウェブアプリ」を選択し、<strong>次のアクセス制限でデプロイを実行します</strong>。
+                                    <ul class="list-disc list-inside ml-4 mt-1 text-slate-600 font-medium">
+                                        <li>「実行するユーザー」：<strong>「自分 (Your account)」</strong></li>
+                                        <li>「アクセスできるユーザー」：<strong>「全員 (Anyone)」</strong></li>
+                                    </ul>
+                                </li>
+                                <li>表示されるダイアログで「アクセスを承認」をクリックし、安全性の確認画面をスキップ（「詳細」＞「～（安全ではないページ）に移動」をクリック）して許可します。</li>
+                                <li>デプロイ完了後に発行される <strong>「ウェブアプリのURL」</strong>（https://script.google.com/macros/s/...）をコピーし、下のテキスト欄に貼り付けて「設定を保存」をクリックします。</li>
+                            </ol>
+                        </div>
+
+                        <!-- Web App URL Input -->
+                        <div class="space-y-1.5 pt-2">
+                            <label class="block text-xs font-bold text-slate-700">Google Apps Script (GAS) ウェブアプリURL</label>
+                            <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <button onclick="saveGasSettings()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2 rounded-xl text-xs shadow-md transition duration-200 flex items-center space-x-1.5">
+                                <i class="fa-solid fa-cloud-check"></i>
+                                <span>連携設定を保存</span>
+                            </button>
+                            <span id="gasStatusBadge" class="hidden text-xs font-bold px-3 py-1 rounded-full"></span>
+                        </div>
+
+                        <!-- Copyable Script Box -->
+                        <div class="space-y-1.5 pt-4">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-xs font-bold text-slate-600">コピー用 GAS 汎用プログラムコード</label>
+                                <button onclick="copyGasScriptToClipboard()" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center space-x-1 transition">
+                                    <i class="fa-solid fa-copy"></i>
+                                    <span>コードをコピー</span>
+                                </button>
+                            </div>
+                            <textarea id="gasScriptBlock" readonly rows="8" class="w-full p-3 bg-slate-950 text-emerald-400 font-mono text-xs rounded-xl focus:outline-none leading-relaxed select-all">function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000); // 競合防止のため30秒まで待機ロックをかける
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var payload = JSON.parse(e.postData.contents);
+
+    var lastCol = Math.max(sheet.getLastColumn(), 1);
+    var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+
+    // 空のスプレッドシートの場合、初期の必須ヘッダーを定義
+    if (headers.length === 1 && headers[0] === "") {
+      headers = ["送信日時", "所属医院", "氏名"];
+      sheet.getRange(1, 1, 1, 3).setValues([headers]);
+      lastCol = 3;
+    }
+
+    // ヘッダー名から前後のスペースを削除して統一
+    headers = headers.map(function(h) { return h.toString().trim(); });
+
+    // 新しい行データを格納するオブジェクト
+    var rowData = {};
+    rowData["送信日時"] = payload.timestamp;
+    rowData["所属医院"] = payload.clinic;
+    rowData["氏名"] = payload.name;
+
+    // 動的な入力項目 (ユーザー作成の質問項目) を走査
+    var responses = payload.data;
+    for (var question in responses) {
+      var qTrim = question.trim();
+      var headerIndex = headers.indexOf(qTrim);
+      
+      // スプレッドシートにまだこの質問列が無い場合は、自動で右端にヘッダー列を追加
+      if (headerIndex === -1) {
+        sheet.getRange(1, lastCol + 1).setValue(qTrim);
+        headers.push(qTrim);
+        lastCol++;
+        headerIndex = headers.length - 1;
+      }
+      rowData[qTrim] = responses[question];
+    }
+
+    // ヘッダーの順序に沿って1レコード（行）分の配列を作成
+    var newRow = [];
+    for (var i = 0; i < headers.length; i++) {
+      var hName = headers[i];
+      newRow.push(rowData[hName] !== undefined ? rowData[hName] : "");
+    }
+
+    // スプレッドシートの最終行にデータを追加
+    sheet.appendRow(newRow);
+
+    return ContentService.createTextOutput(JSON.stringify({ "result": "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Security Passcode Changer Panel -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 max-w-md space-y-4 shadow-sm">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-key text-indigo-600"></i>
+                            <span>管理者パスコードの変更</span>
+                        </h3>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-semibold text-slate-500">現在のパスコード</label>
+                            <input type="password" id="currentPasscodeCheck" placeholder="現在のパスコードを入力" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-semibold text-slate-500">新しいパスコード</label>
+                            <input type="password" id="newPasscodeVal" placeholder="新しいパスコードを入力" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-semibold text-slate-500">新しいパスコード (確認)</label>
+                            <input type="password" id="newPasscodeConfirmVal" placeholder="もう一度入力してください" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+                        </div>
+
+                        <button onclick="changeAdminPasscode()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition duration-200 flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-shield-check"></i>
+                            <span>パスコードを変更・適用</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Panel Footer -->
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
+                <button onclick="toggleAdminPanel()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold px-6 py-2 rounded-xl text-xs transition duration-200">
+                    閉じる
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="bg-slate-100 border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-3xl mx-auto px-4 text-center space-y-2 text-xs text-slate-500">
+            <p>© 医療法人社団 月山会 (Gassankai Medical Corporation). All Rights Reserved.</p>
+            <p>※本システムは、セキュリティ保護されたローカル・クラウド協調型のプライベート入力フォームシステムです。</p>
+        </div>
+    </footer>
+
+    <!-- Logic Script Area -->
+    <script>
+        // Default state containing mock data for test names as requested, and exact replica of screens
+        const DEFAULT_STATE = {
+            clinics: ["山形院", "所沢院", "仙台院"],
+            adminPIN: "1234", 
+            gasURL: "", // Google Apps Script URL field
+            staff: {
+                "山形院": [
+                    "山形 太郎 (テストネーム)",
+                    "山形 次郎 (テストネーム)",
+                    "山形 三郎 (テストネーム)"
+                ],
+                "所沢院": [
+                    "所沢 一郎 (テストネーム)",
+                    "所沢 二郎 (テストネーム)",
+                    "所沢 三郎 (テストネーム)"
+                ],
+                "仙台院": [
+                    "仙台 太郎 (テストネーム)",
+                    "仙台 次郎 (テストネーム)",
+                    "仙台 三郎 (テストネーム)"
+                ]
+            },
+            fields: [
+                {
+                    id: "field_category",
+                    label: "ご意見のカテゴリーを選んでください。",
+                    type: "checkbox",
+                    required: true,
+                    options: [
+                        "患者さま関係",
+                        "スタッフとの人間関係",
+                        "建物・駐車場などの設備関係",
+                        "診療器具・リハビリ器具などの器具関係",
+                        "院内ルールなどの運用関係",
+                        "院内行事などの催事関係",
+                        "その他:"
+                    ]
+                },
+                {
+                    id: "field_opinion",
+                    label: "どの様なご意見でしょうか？",
+                    type: "textarea",
+                    required: true,
+                    options: []
+                },
+                {
+                    id: "field_urgency",
+                    label: "そのご意見に緊急性はありますか？",
+                    type: "checkbox",
+                    required: true,
+                    options: ["高い", "低い"]
+                },
+                {
+                    id: "field_importance",
+                    label: "そのご意見の重要度は高いですか？",
+                    type: "checkbox",
+                    required: true,
+                    options: ["高い", "低い"]
+                },
+                {
+                    id: "field_additional",
+                    label: "その他、何か追記事項があればご入力をお願いします。",
+                    type: "textarea",
+                    required: false,
+                    options: []
+                }
+            ],
+            submissions: []
+        };
+
+        // Live runtime app state
+        let appState = {};
+
+        // Active selection state for current form filler
+        let currentSubmission = {
+            clinic: "",
+            name: "",
+            answers: {},
+            otherDetails: {} // To store dynamic "その他" details text
+        };
+
+        // Load settings from local storage or initialize with default
+        window.onload = function() {
+            const savedState = localStorage.getItem("gassankai_form_state_v3");
+            if (savedState) {
+                try {
+                    appState = JSON.parse(savedState);
+                    // Fill keys if they do not exist
+                    if (!appState.fields || !appState.staff || !appState.submissions) {
+                        appState = DEFAULT_STATE;
+                    }
+                    if (!appState.adminPIN) {
+                        appState.adminPIN = "1234";
+                    }
+                    if (appState.gasURL === undefined) {
+                        appState.gasURL = "";
+                    }
+                } catch (e) {
+                    appState = DEFAULT_STATE;
+                }
+            } else {
+                appState = DEFAULT_STATE;
+            }
+
+            // Sync admin panel UI textareas with active state
+            syncStaffInputsFromState();
+            renderCustomFields();
+            renderAdminFieldsList();
+            renderSubmissionsTable();
+            updateGasStatusBadge();
+
+            // Set default empty answers
+            resetCurrentSubmissionAnswers();
+        };
+
+        // Syncs local storage
+        function saveStateToStorage() {
+            localStorage.setItem("gassankai_form_state_v3", JSON.stringify(appState));
+        }
+
+        // Set default field answers
+        function resetCurrentSubmissionAnswers() {
+            currentSubmission.clinic = "";
+            currentSubmission.name = "";
+            currentSubmission.answers = {};
+            currentSubmission.otherDetails = {};
+            
+            appState.fields.forEach(f => {
+                if (f.type === 'checkbox') {
+                    currentSubmission.answers[f.id] = [];
+                } else {
+                    currentSubmission.answers[f.id] = "";
+                }
+            });
+        }
+
+        // Multi-Step Form Navigation Controller
+        function goToStep(stepNum) {
+            // Hide all steps
+            for (let i = 1; i <= 5; i++) {
+                const s = document.getElementById("step" + i);
+                if (s) {
+                    s.classList.add("hidden");
+                    s.classList.remove("block");
+                }
+            }
+
+            // Show active step
+            const activeStep = document.getElementById("step" + stepNum);
+            if (activeStep) {
+                activeStep.classList.remove("hidden");
+                activeStep.classList.add("block");
+            }
+
+            // Update Progress Bar Indicator
+            const progressContainer = document.getElementById("progressContainer");
+            const bar = document.getElementById("progressBar");
+            
+            if (stepNum === 5) {
+                progressContainer.classList.add("hidden");
+            } else {
+                progressContainer.classList.remove("hidden");
+                const progressPercentage = (stepNum / 4) * 100;
+                bar.style.width = progressPercentage + "%";
+            }
+
+            // Handle step label coloring active state
+            for (let i = 1; i <= 4; i++) {
+                const label = document.getElementById("stepLabel" + i);
+                if (label) {
+                    if (i <= stepNum) {
+                        label.classList.add("text-indigo-600", "font-bold");
+                        label.classList.remove("text-slate-400");
+                    } else {
+                        label.classList.remove("text-indigo-600", "font-bold");
+                        label.classList.add("text-slate-400");
+                    }
+                }
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Step 1 Click Handler: Select Hospital Branch
+        function selectClinic(clinicName) {
+            currentSubmission.clinic = clinicName;
+            document.getElementById("selectedClinicHeader").innerText = clinicName;
+            document.getElementById("staffSearchInput").value = ""; // Clear old search
+            renderStaffList(clinicName);
+            goToStep(2);
+        }
+
+        // Step 2 Staff List Builder
+        function renderStaffList(clinicName) {
+            const container = document.getElementById("staffListGrid");
+            container.innerHTML = "";
+            const staffArray = appState.staff[clinicName] || [];
+
+            if (staffArray.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center text-slate-400 bg-white border border-slate-200 rounded-2xl">
+                        <i class="fa-solid fa-users-slash text-3xl mb-2 block"></i>
+                        この医院の名簿は現在登録がありません。<br>
+                        右上「管理設定」から名簿を追加してください。
+                    </div>
+                `;
+                return;
+            }
+
+            staffArray.forEach(person => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.onclick = () => selectStaff(person);
+                btn.className = "p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 rounded-2xl font-semibold text-slate-800 text-sm hover:text-indigo-700 transition duration-150 text-center shadow-sm flex items-center justify-center min-h-[64px]";
+                btn.innerText = person;
+                container.appendChild(btn);
+            });
+        }
+
+        // Live Staff Filter Search Bar Functionality
+        function filterStaff() {
+            const query = document.getElementById("staffSearchInput").value.toLowerCase();
+            const container = document.getElementById("staffListGrid");
+            const buttons = container.getElementsByTagName("button");
+
+            Array.from(buttons).forEach(btn => {
+                const name = btn.innerText.toLowerCase();
+                if (name.includes(query)) {
+                    btn.style.display = "flex";
+                } else {
+                    btn.style.display = "none";
+                }
+            });
+        }
+
+        // Step 2 Click Handler: Selected Person
+        function selectStaff(name) {
+            currentSubmission.name = name;
+            
+            // Fill summaries for Step 3
+            document.getElementById("summaryClinic").innerText = currentSubmission.clinic;
+            document.getElementById("summaryName").innerText = currentSubmission.name;
+            
+            // Build dynamically custom fields view
+            renderCustomFields();
+            goToStep(3);
+        }
+
+        // Build Step 3 Google Forms cards matching Screens beautifully
+        function renderCustomFields() {
+            const form = document.getElementById("reportingForm");
+            form.innerHTML = "";
+
+            appState.fields.forEach(field => {
+                const card = document.createElement("div");
+                card.id = `card_${field.id}`;
+                // Soft elegant Google Form rounded card wrapper
+                card.className = "bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6 space-y-4 transition-all duration-200";
+
+                // Label & Required Star indicator
+                const labelWrapper = document.createElement("div");
+                labelWrapper.className = "space-y-1";
+                
+                const label = document.createElement("label");
+                label.className = "block font-medium text-slate-900 text-base md:text-lg leading-relaxed";
+                
+                // Set plain text label
+                label.innerText = field.label.replace(" *", "");
+
+                // Red indicator asterisk matching screenshot
+                if (field.required) {
+                    const reqSpan = document.createElement("span");
+                    reqSpan.className = "text-rose-600 ml-1";
+                    reqSpan.innerText = "*";
+                    label.appendChild(reqSpan);
+                }
+                labelWrapper.appendChild(label);
+                card.appendChild(labelWrapper);
+
+                // Input Builder according to Type
+                let inputElement;
+
+                if (field.type === "text") {
+                    inputElement = document.createElement("input");
+                    inputElement.type = "text";
+                    inputElement.id = field.id;
+                    inputElement.placeholder = "回答を入力";
+                    inputElement.className = "w-full pb-2 border-b border-slate-300 focus:border-indigo-600 focus:outline-none text-sm md:text-base bg-transparent pt-1 transition duration-150";
+                    inputElement.value = currentSubmission.answers[field.id] || "";
+                    inputElement.oninput = (e) => { 
+                        currentSubmission.answers[field.id] = e.target.value; 
+                        clearFieldWarning(field.id);
+                    };
+                    card.appendChild(inputElement);
+
+                } else if (field.type === "textarea") {
+                    inputElement = document.createElement("textarea");
+                    inputElement.id = field.id;
+                    inputElement.rows = 2;
+                    inputElement.placeholder = "回答を入力";
+                    inputElement.className = "w-full pb-2 border-b border-slate-300 focus:border-indigo-600 focus:outline-none text-sm md:text-base bg-transparent pt-1 resize-y leading-relaxed transition duration-150";
+                    inputElement.value = currentSubmission.answers[field.id] || "";
+                    inputElement.oninput = (e) => { 
+                        currentSubmission.answers[field.id] = e.target.value; 
+                        clearFieldWarning(field.id);
+                    };
+                    card.appendChild(inputElement);
+
+                } else if (field.type === "date") {
+                    inputElement = document.createElement("input");
+                    inputElement.type = "date";
+                    inputElement.id = field.id;
+                    inputElement.className = "w-full md:w-64 pb-2 border-b border-slate-300 focus:border-indigo-600 focus:outline-none text-sm md:text-base bg-transparent pt-1 transition duration-150";
+                    inputElement.value = currentSubmission.answers[field.id] || "";
+                    inputElement.onchange = (e) => { 
+                        currentSubmission.answers[field.id] = e.target.value; 
+                        clearFieldWarning(field.id);
+                    };
+                    card.appendChild(inputElement);
+
+                } else if (field.type === "select") {
+                    inputElement = document.createElement("select");
+                    inputElement.id = field.id;
+                    inputElement.className = "w-full md:w-80 pb-2 border-b border-slate-300 focus:border-indigo-600 focus:outline-none text-sm bg-transparent pt-1 transition duration-150";
+                    
+                    const defaultOpt = document.createElement("option");
+                    defaultOpt.value = "";
+                    defaultOpt.innerText = "選択";
+                    inputElement.appendChild(defaultOpt);
+
+                    field.options.forEach(opt => {
+                        const o = document.createElement("option");
+                        o.value = opt;
+                        o.innerText = opt;
+                        if (currentSubmission.answers[field.id] === opt) {
+                            o.selected = true;
+                        }
+                        inputElement.appendChild(o);
+                    });
+                    inputElement.onchange = (e) => { 
+                        currentSubmission.answers[field.id] = e.target.value; 
+                        clearFieldWarning(field.id);
+                    };
+                    card.appendChild(inputElement);
+
+                } else if (field.type === "radio") {
+                    const radioWrapper = document.createElement("div");
+                    radioWrapper.className = "space-y-3 pt-2";
+                    
+                    field.options.forEach((opt, idx) => {
+                        const row = document.createElement("label");
+                        row.className = "flex items-center space-x-3 cursor-pointer group";
+                        
+                        const r = document.createElement("input");
+                        r.type = "radio";
+                        r.name = field.id;
+                        r.value = opt;
+                        r.className = "w-5 h-5 text-indigo-600 border-slate-400 focus:ring-indigo-500 rounded-full";
+                        if (currentSubmission.answers[field.id] === opt) {
+                            r.checked = true;
+                        }
+                        r.onchange = (e) => { 
+                            currentSubmission.answers[field.id] = e.target.value; 
+                            clearFieldWarning(field.id);
+                        };
+                        
+                        row.appendChild(r);
+                        const labelText = document.createElement("span");
+                        labelText.className = "text-sm text-slate-800 font-medium group-hover:text-slate-900";
+                        labelText.innerText = opt;
+                        row.appendChild(labelText);
+                        
+                        radioWrapper.appendChild(row);
+                    });
+                    card.appendChild(radioWrapper);
+
+                } else if (field.type === "checkbox") {
+                    const checkWrapper = document.createElement("div");
+                    checkWrapper.className = "space-y-4 pt-1";
+                    
+                    if (!Array.isArray(currentSubmission.answers[field.id])) {
+                        currentSubmission.answers[field.id] = [];
+                    }
+
+                    field.options.forEach((opt, idx) => {
+                        const isOther = opt.toLowerCase().includes("その他") || opt.includes("その他:");
+                        const row = document.createElement("div");
+                        row.className = "flex flex-col space-y-2";
+
+                        const labelLine = document.createElement("label");
+                        labelLine.className = "flex items-start space-x-3 cursor-pointer group";
+                        
+                        const c = document.createElement("input");
+                        c.type = "checkbox";
+                        c.value = opt;
+                        // Elegant flat-square border design matching the screenshot
+                        c.className = "w-5 h-5 text-indigo-600 border-2 border-slate-400 rounded focus:ring-indigo-500 mt-0.5";
+                        if (currentSubmission.answers[field.id].includes(opt)) {
+                            c.checked = true;
+                        }
+                        
+                        c.onchange = (e) => {
+                            let list = currentSubmission.answers[field.id] || [];
+                            if (e.target.checked) {
+                                if (!list.includes(opt)) list.push(opt);
+                            } else {
+                                list = list.filter(item => item !== opt);
+                            }
+                            currentSubmission.answers[field.id] = list;
+                            clearFieldWarning(field.id);
+                            
+                            // Toggle detail input visibility if "その他" checkbox toggles
+                            if (isOther) {
+                                const detailInput = document.getElementById(`other_text_${field.id}`);
+                                if (detailInput) {
+                                    if (e.target.checked) {
+                                        detailInput.classList.remove("hidden");
+                                        detailInput.focus();
+                                    } else {
+                                        detailInput.classList.add("hidden");
+                                    }
+                                }
+                            }
+                        };
+                        
+                        labelLine.appendChild(c);
+                        
+                        const labelText = document.createElement("span");
+                        labelText.className = "text-sm text-slate-800 font-medium group-hover:text-slate-900 leading-relaxed";
+                        labelText.innerText = opt;
+                        labelLine.appendChild(labelText);
+                        row.appendChild(labelLine);
+
+                        // If it is the "その他" option, append a helper inline text input as requested in screenshot-1
+                        if (isOther) {
+                            const otherInput = document.createElement("input");
+                            otherInput.type = "text";
+                            otherInput.id = `other_text_${field.id}`;
+                            otherInput.placeholder = "こちらにご記入ください";
+                            otherInput.className = "ml-8 max-w-md pb-1 border-b border-slate-300 focus:border-indigo-600 focus:outline-none text-xs md:text-sm bg-transparent transition duration-150 " + 
+                                                   (currentSubmission.answers[field.id].includes(opt) ? "" : "hidden");
+                            otherInput.value = currentSubmission.otherDetails[field.id] || "";
+                            otherInput.oninput = (e) => {
+                                currentSubmission.otherDetails[field.id] = e.target.value;
+                            };
+                            row.appendChild(otherInput);
+                        }
+
+                        checkWrapper.appendChild(row);
+                    });
+                    card.appendChild(checkWrapper);
+                }
+
+                // Add placeholder area for beautiful Google Forms style error warning
+                const errorAlert = document.createElement("div");
+                errorAlert.id = `err_${field.id}`;
+                errorAlert.className = "text-rose-600 text-xs font-semibold hidden flex items-center space-x-1.5 pt-1 animate-in fade-in duration-150";
+                errorAlert.innerHTML = `<i class="fa-solid fa-circle-exclamation text-sm"></i> <span>この質問は必須です</span>`;
+                card.appendChild(errorAlert);
+
+                form.appendChild(card);
+            });
+        }
+
+        // Helper to remove red border/exclamation once answered
+        function clearFieldWarning(fieldId) {
+            const card = document.getElementById(`card_${fieldId}`);
+            const errorAlert = document.getElementById(`err_${fieldId}`);
+            if (card) {
+                card.classList.remove("border-rose-500", "bg-rose-50/10");
+            }
+            if (errorAlert) {
+                errorAlert.classList.add("hidden");
+            }
+        }
+
+        // Clean form trigger
+        function confirmClearForm() {
+            const confirmBox = document.createElement("div");
+            confirmBox.className = "fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-sm flex items-center justify-center p-4";
+            confirmBox.innerHTML = `
+                <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 animate-in zoom-in duration-150">
+                    <h3 class="font-bold text-slate-900 text-lg">フォームのクリア</h3>
+                    <p class="text-sm text-slate-500">入力中のすべての内容を破棄し、初期値にリセットします。本当によろしいですか？</p>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button id="cancelClearBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2 rounded-xl text-xs transition">キャンセル</button>
+                        <button id="confirmClearBtn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs transition">クリアする</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmBox);
+
+            document.getElementById("cancelClearBtn").onclick = () => confirmBox.remove();
+            document.getElementById("confirmClearBtn").onclick = () => {
+                resetCurrentSubmissionAnswers();
+                renderCustomFields();
+                confirmBox.remove();
+                showNotification("回答内容をクリアしました", "success");
+            };
+        }
+
+        // Validate and advance logic matching Google Forms Error Layout
+        function validateAndGoToReview() {
+            let errorCount = 0;
+            let firstErrorElement = null;
+
+            appState.fields.forEach(field => {
+                const val = currentSubmission.answers[field.id];
+                const card = document.getElementById(`card_${field.id}`);
+                const errorAlert = document.getElementById(`err_${field.id}`);
+                
+                // Reset styling
+                if (card) {
+                    card.classList.remove("border-rose-500", "bg-rose-50/10");
+                }
+                if (errorAlert) {
+                    errorAlert.classList.add("hidden");
+                }
+
+                if (field.required) {
+                    let isEmpty = false;
+                    if (field.type === 'checkbox') {
+                        isEmpty = !val || val.length === 0;
+                    } else {
+                        isEmpty = !val || val.trim() === "";
+                    }
+
+                    if (isEmpty) {
+                        errorCount++;
+                        if (card) {
+                            // Add classic red border & soft highlight
+                            card.classList.add("border-rose-500", "bg-rose-50/10");
+                            if (!firstErrorElement) {
+                                firstErrorElement = card;
+                            }
+                        }
+                        if (errorAlert) {
+                            errorAlert.classList.remove("hidden");
+                        }
+                    }
+                }
+            });
+
+            if (errorCount > 0) {
+                showNotification("未入力の必須項目があります。画面を確認してください。", "error");
+                if (firstErrorElement) {
+                    firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+
+            // Load values to review screen
+            document.getElementById("reviewClinic").innerText = currentSubmission.clinic;
+            document.getElementById("reviewName").innerText = currentSubmission.name;
+
+            const reviewContainer = document.getElementById("dynamicReviewBody");
+            reviewContainer.innerHTML = "";
+
+            appState.fields.forEach(field => {
+                const tr = document.createElement("tr");
+                tr.className = "border-b border-slate-150";
+
+                const th = document.createElement("th");
+                th.className = "p-4 bg-slate-100 font-bold text-slate-700 border-r border-slate-200 w-1/3";
+                th.innerText = field.label;
+
+                const td = document.createElement("td");
+                td.className = "p-4 text-slate-800 whitespace-pre-wrap";
+                
+                const val = currentSubmission.answers[field.id];
+                if (field.type === 'checkbox') {
+                    if (val && val.length > 0) {
+                        const formattedList = val.map(opt => {
+                            const isOther = opt.toLowerCase().includes("その他") || opt.includes("その他:");
+                            if (isOther && currentSubmission.otherDetails[field.id]) {
+                                return `${opt} (${currentSubmission.otherDetails[field.id]})`;
+                            }
+                            return opt;
+                        });
+                        td.innerText = formattedList.join(", ");
+                    } else {
+                        td.innerText = "未選択";
+                    }
+                } else {
+                    td.innerText = val ? val : "未入力";
+                }
+
+                tr.appendChild(th);
+                tr.appendChild(td);
+                reviewContainer.appendChild(tr);
+            });
+
+            goToStep(4);
+        }
+
+        // Form Submission Execution (Sends locally AND pushes to Google Sheets in background)
+        function submitForm() {
+            const now = new Date();
+            const timestamp = now.getFullYear() + "/" + 
+                              String(now.getMonth() + 1).padStart(2, '0') + "/" + 
+                              String(now.getDate()).padStart(2, '0') + " " + 
+                              String(now.getHours()).padStart(2, '0') + ":" + 
+                              String(now.getMinutes()).padStart(2, '0');
+
+            // Format answers with labels for Google Sheet mapping ease
+            const savedAnswers = {};
+            const sheetPayloadData = {}; // Format: "Question Title": "Value"
+
+            appState.fields.forEach(field => {
+                const rawVal = currentSubmission.answers[field.id];
+                let finalValStr = "";
+
+                if (field.type === 'checkbox' && Array.isArray(rawVal)) {
+                    const formattedArray = rawVal.map(opt => {
+                        const isOther = opt.toLowerCase().includes("その他") || opt.includes("その他:");
+                        if (isOther && currentSubmission.otherDetails[field.id]) {
+                            return `${opt} (${currentSubmission.otherDetails[field.id]})`;
+                        }
+                        return opt;
+                    });
+                    savedAnswers[field.id] = formattedArray;
+                    finalValStr = formattedArray.join(", ");
+                } else {
+                    savedAnswers[field.id] = rawVal;
+                    finalValStr = rawVal || "";
+                }
+
+                // Map clean label name to clean value
+                sheetPayloadData[field.label] = finalValStr;
+            });
+
+            const newEntry = {
+                id: Date.now(),
+                timestamp: timestamp,
+                clinic: currentSubmission.clinic,
+                name: currentSubmission.name,
+                answers: savedAnswers
+            };
+
+            // Save to local backup database array first
+            appState.submissions.unshift(newEntry);
+            saveStateToStorage();
+            renderSubmissionsTable();
+
+            // Prepare packet specifically for Apps Script
+            const scriptPacket = {
+                timestamp: timestamp,
+                clinic: currentSubmission.clinic,
+                name: currentSubmission.name,
+                data: sheetPayloadData
+            };
+
+            // If Google Sheet Webapp URL is active, push to cloud with visual loader
+            if (appState.gasURL && appState.gasURL.trim() !== "") {
+                const overlay = document.getElementById("loadingOverlay");
+                overlay.classList.remove("hidden"); // Show loader
+
+                fetch(appState.gasURL, {
+                    method: "POST",
+                    mode: "no-cors", // Crucial for GAS cross-origin redirects
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(scriptPacket)
+                })
+                .then(() => {
+                    // Success callback
+                    overlay.classList.add("hidden");
+                    showNotification("スプレッドシートへ直接書き込み完了しました！", "success");
+                    goToStep(5);
+                })
+                .catch(err => {
+                    overlay.classList.add("hidden");
+                    showNotification("クラウド連携エラーが発生しましたが、端末にデータを一時保存しました。", "error");
+                    console.error("GAS Push error:", err);
+                    goToStep(5); // Still show completed since local database captured it safely
+                });
+            } else {
+                // Local-only save mode
+                showNotification("ローカルデータへの一時保存が完了しました。", "success");
+                goToStep(5);
+            }
+        }
+
+        // Restart form for a new day/entry
+        function resetForm() {
+            resetCurrentSubmissionAnswers();
+            goToStep(1);
+        }
+
+        // Non-obtrusive in-app notifications
+        function showNotification(message, type = "success") {
+            const container = document.createElement("div");
+            container.className = "fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] flex items-center space-x-2 px-6 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-10 opacity-0 text-sm font-bold";
+            
+            if (type === "success") {
+                container.className += " bg-emerald-600 text-white shadow-emerald-100";
+                container.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${message}</span>`;
+            } else {
+                container.className += " bg-rose-600 text-white shadow-rose-100";
+                container.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <span>${message}</span>`;
+            }
+
+            document.body.appendChild(container);
+            
+            setTimeout(() => {
+                container.classList.remove("translate-y-10", "opacity-0");
+                container.classList.add("translate-y-0", "opacity-100");
+            }, 50);
+
+            setTimeout(() => {
+                container.classList.remove("translate-y-0", "opacity-100");
+                container.classList.add("translate-y-10", "opacity-0");
+                setTimeout(() => {
+                    container.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Passcode Gate Modal Functions
+        function openPasscodeModal() {
+            // Reset modal input
+            document.getElementById("adminPasscodeInput").value = "";
+            document.getElementById("passcodeError").classList.add("hidden");
+            
+            const modal = document.getElementById("passcodeModal");
+            modal.classList.remove("hidden");
+            
+            // Focus input
+            setTimeout(() => {
+                document.getElementById("adminPasscodeInput").focus();
+            }, 100);
+        }
+
+        function closePasscodeModal() {
+            const modal = document.getElementById("passcodeModal");
+            modal.classList.add("hidden");
+        }
+
+        function verifyPasscode() {
+            const inputVal = document.getElementById("adminPasscodeInput").value;
+            const errorLabel = document.getElementById("passcodeError");
+            
+            // Validate pin code against active configuration (defaults to "1234")
+            if (inputVal === appState.adminPIN) {
+                closePasscodeModal();
+                toggleAdminPanel(); // Open Admin settings
+            } else {
+                errorLabel.classList.remove("hidden");
+                // Animate entry jitter
+                const input = document.getElementById("adminPasscodeInput");
+                input.classList.add("border-rose-500", "animate-bounce");
+                setTimeout(() => {
+                    input.classList.remove("border-rose-500", "animate-bounce");
+                }, 500);
+            }
+        }
+
+        // Trigger verifyPasscode on Enter key
+        document.getElementById("adminPasscodeInput")?.addEventListener("keypress", function(e) {
+            if (e.key === 'Enter') {
+                verifyPasscode();
+            }
+        });
+
+        // Manage Toggle Admin View
+        function toggleAdminPanel() {
+            const panel = document.getElementById("adminPanel");
+            if (panel.classList.contains("hidden")) {
+                panel.classList.remove("hidden");
+                renderAdminFieldsList();
+                renderSubmissionsTable();
+                
+                // Set GAS URL input value
+                document.getElementById("gasUrlInput").value = appState.gasURL || "";
+                updateGasStatusBadge();
+            } else {
+                panel.classList.add("hidden");
+            }
+        }
+
+        // Sidebar/Tab Switcher
+        function switchAdminTab(tabName) {
+            const tabs = ["staff", "fields", "submissions", "security"];
+            tabs.forEach(t => {
+                const btn = document.getElementById("tabBtn" + t.charAt(0).toUpperCase() + t.slice(1));
+                const panel = document.getElementById("tabPanel" + t.charAt(0).toUpperCase() + t.slice(1));
+                
+                if (t === tabName) {
+                    btn.classList.add("border-indigo-600", "text-indigo-600");
+                    btn.classList.remove("border-transparent", "text-slate-500");
+                    panel.classList.remove("hidden");
+                } else {
+                    btn.classList.remove("border-indigo-600", "text-indigo-600");
+                    btn.classList.add("border-transparent", "text-slate-500");
+                    panel.classList.add("hidden");
+                }
+            });
+        }
+
+        // Parse Textareas to State and Save
+        function syncStaffInputsFromState() {
+            document.getElementById("staffListYamagata").value = (appState.staff["山形院"] || []).join("\n");
+            document.getElementById("staffListTokorozawa").value = (appState.staff["所沢院"] || []).join("\n");
+            document.getElementById("staffListSendai").value = (appState.staff["仙台院"] || []).join("\n");
+        }
+
+        function saveStaffLists() {
+            const rawYamagata = document.getElementById("staffListYamagata").value;
+            const rawTokorozawa = document.getElementById("staffListTokorozawa").value;
+            const rawSendai = document.getElementById("staffListSendai").value;
+
+            appState.staff["山形院"] = rawYamagata.split("\n").map(n => n.trim()).filter(n => n !== "");
+            appState.staff["所沢院"] = rawTokorozawa.split("\n").map(n => n.trim()).filter(n => n !== "");
+            appState.staff["仙台院"] = rawSendai.split("\n").map(n => n.trim()).filter(n => n !== "");
+
+            saveStateToStorage();
+            showNotification("名簿リストを保存しました", "success");
+        }
+
+        // Toggle options field when select/radio/checkbox options are required
+        function toggleOptionsInput() {
+            const type = document.getElementById("newFieldType").value;
+            const container = document.getElementById("newFieldOptionsContainer");
+            if (["select", "radio", "checkbox"].includes(type)) {
+                container.classList.remove("hidden");
+            } else {
+                container.classList.add("hidden");
+            }
+        }
+
+        // Adds new custom questions to list
+        function addField() {
+            const label = document.getElementById("newFieldLabel").value.trim();
+            const type = document.getElementById("newFieldType").value;
+            const required = document.getElementById("newFieldRequired").checked;
+            const rawOptions = document.getElementById("newFieldOptions").value.trim();
+
+            if (!label) {
+                showNotification("タイトルを入力してください", "error");
+                return;
+            }
+
+            let options = [];
+            if (["select", "radio", "checkbox"].includes(type)) {
+                options = rawOptions.split(",").map(o => o.trim()).filter(o => o !== "");
+                if (options.length === 0) {
+                    showNotification("選択肢を1つ以上入力してください (カンマ区切り)", "error");
+                    return;
+                }
+            }
+
+            const newField = {
+                id: "field_" + Date.now(),
+                label: label,
+                type: type,
+                required: required,
+                options: options
+            };
+
+            appState.fields.push(newField);
+            saveStateToStorage();
+            
+            // Reset inputs
+            document.getElementById("newFieldLabel").value = "";
+            document.getElementById("newFieldOptions").value = "";
+            document.getElementById("newFieldRequired").checked = true;
+            toggleOptionsInput();
+
+            renderAdminFieldsList();
+            renderCustomFields();
+            showNotification("新しい質問項目を追加しました", "success");
+        }
+
+        // Renders Questions Manager in Admin Panel
+        function renderAdminFieldsList() {
+            const container = document.getElementById("fieldsListContainer");
+            container.innerHTML = "";
+
+            if (appState.fields.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                        追加された項目はありません。
+                    </div>
+                `;
+                return;
+            }
+
+            appState.fields.forEach((field, index) => {
+                // Wrapper element to hold display bar and expandable edit form
+                const boxWrapper = document.createElement("div");
+                boxWrapper.className = "border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 mb-3 shadow-sm";
+
+                const box = document.createElement("div");
+                box.className = "flex items-center justify-between p-4 hover:bg-slate-50 transition";
+
+                // Field Details Display
+                const details = document.createElement("div");
+                details.className = "space-y-1";
+
+                const titleRow = document.createElement("div");
+                titleRow.className = "flex items-center space-x-2";
+
+                const title = document.createElement("span");
+                title.className = "font-bold text-slate-800 text-sm";
+                title.innerText = field.label;
+                titleRow.appendChild(title);
+
+                if (field.required) {
+                    const r = document.createElement("span");
+                    r.className = "bg-rose-50 text-rose-600 text-[9px] px-1.5 py-0.5 rounded font-bold";
+                    r.innerText = "必須";
+                    titleRow.appendChild(r);
+                }
+                details.appendChild(titleRow);
+
+                const typeSpan = document.createElement("span");
+                typeSpan.className = "text-[11px] text-slate-500 font-medium bg-white px-2 py-0.5 rounded-full border border-slate-200";
+                
+                const typeMap = {
+                    text: "短いテキスト",
+                    textarea: "長いテキスト",
+                    select: "プルダウン",
+                    radio: "ラジオボタン",
+                    checkbox: "チェックボックス",
+                    date: "日付"
+                };
+                typeSpan.innerText = typeMap[field.type] || field.type;
+                details.appendChild(typeSpan);
+
+                if (field.options && field.options.length > 0) {
+                    const optSpan = document.createElement("p");
+                    optSpan.className = "text-[11px] text-slate-400 max-w-md truncate mt-0.5";
+                    optSpan.innerText = "選択肢: " + field.options.join(", ");
+                    details.appendChild(optSpan);
+                }
+
+                box.appendChild(details);
+
+                // Actions Button Panel
+                const actions = document.createElement("div");
+                actions.className = "flex items-center space-x-1";
+
+                // Toggle Edit Panel Button
+                const editBtn = document.createElement("button");
+                editBtn.onclick = () => toggleEditField(field.id);
+                editBtn.className = "w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition shadow-sm";
+                editBtn.innerHTML = `<i class="fa-solid fa-pen-to-square text-xs"></i>`;
+                actions.appendChild(editBtn);
+
+                // Move Up
+                const upBtn = document.createElement("button");
+                upBtn.disabled = index === 0;
+                upBtn.onclick = () => moveField(index, -1);
+                upBtn.className = "w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-slate-500 transition shadow-sm";
+                upBtn.innerHTML = `<i class="fa-solid fa-arrow-up text-xs"></i>`;
+                actions.appendChild(upBtn);
+
+                // Move Down
+                const downBtn = document.createElement("button");
+                downBtn.disabled = index === appState.fields.length - 1;
+                downBtn.onclick = () => moveField(index, 1);
+                downBtn.className = "w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-slate-500 transition shadow-sm";
+                downBtn.innerHTML = `<i class="fa-solid fa-arrow-down text-xs"></i>`;
+                actions.appendChild(downBtn);
+
+                // Delete Field Button
+                const delBtn = document.createElement("button");
+                delBtn.onclick = () => deleteField(field.id);
+                delBtn.className = "w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-500 hover:bg-rose-100 rounded-lg border border-rose-200 transition shadow-sm";
+                delBtn.innerHTML = `<i class="fa-solid fa-trash-can text-xs"></i>`;
+                actions.appendChild(delBtn);
+
+                box.appendChild(actions);
+                boxWrapper.appendChild(box);
+
+                // Inline Edit Form Panel (Hidden by default)
+                const editForm = document.createElement("div");
+                editForm.id = `edit_form_${field.id}`;
+                editForm.className = "hidden p-4 bg-white border-t border-slate-200 space-y-4 animate-in slide-in-from-top-1 duration-200";
+
+                // Title Edit Input
+                const editTitleGroup = document.createElement("div");
+                editTitleGroup.className = "space-y-1";
+                editTitleGroup.innerHTML = `
+                    <label class="block text-xs font-bold text-slate-600">質問のタイトル</label>
+                    <input type="text" id="edit_label_${field.id}" value="${field.label}" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                `;
+                editForm.appendChild(editTitleGroup);
+
+                // Required Edit Toggle
+                const editRequiredGroup = document.createElement("div");
+                editRequiredGroup.className = "flex items-center space-x-2";
+                editRequiredGroup.innerHTML = `
+                    <input type="checkbox" id="edit_required_${field.id}" ${field.required ? "checked" : ""} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                    <label for="edit_required_${field.id}" class="text-xs font-bold text-slate-600 cursor-pointer">この質問への回答を必須にする</label>
+                `;
+                editForm.appendChild(editRequiredGroup);
+
+                // Options Edit Input (Only shown if applicable to options types)
+                if (["select", "radio", "checkbox"].includes(field.type)) {
+                    const editOptionsGroup = document.createElement("div");
+                    editOptionsGroup.className = "space-y-1";
+                    editOptionsGroup.innerHTML = `
+                        <label class="block text-xs font-bold text-slate-600">選択肢 (カンマ「,」区切り)</label>
+                        <textarea id="edit_options_${field.id}" rows="3" placeholder="高い,低い" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium leading-relaxed">${field.options ? field.options.join(",") : ""}</textarea>
+                    `;
+                    editForm.appendChild(editOptionsGroup);
+                }
+
+                // Controls Row
+                const editButtonsRow = document.createElement("div");
+                editButtonsRow.className = "flex items-center justify-end space-x-2 pt-2 border-t border-slate-100";
+
+                const cancelEditBtn = document.createElement("button");
+                cancelEditBtn.type = "button";
+                cancelEditBtn.onclick = () => toggleEditField(field.id);
+                cancelEditBtn.className = "px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg transition";
+                cancelEditBtn.innerText = "キャンセル";
+                editButtonsRow.appendChild(cancelEditBtn);
+
+                const saveEditBtn = document.createElement("button");
+                saveEditBtn.type = "button";
+                saveEditBtn.onclick = () => saveEditedField(field.id);
+                saveEditBtn.className = "px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition";
+                saveEditBtn.innerText = "変更を保存";
+                editButtonsRow.appendChild(saveEditBtn);
+
+                editForm.appendChild(editButtonsRow);
+                boxWrapper.appendChild(editForm);
+
+                container.appendChild(boxWrapper);
+            });
+        }
+
+        // Toggle editing accordion view for specific field item
+        function toggleEditField(fieldId) {
+            const formPanel = document.getElementById(`edit_form_${fieldId}`);
+            if (formPanel) {
+                if (formPanel.classList.contains("hidden")) {
+                    formPanel.classList.remove("hidden");
+                } else {
+                    formPanel.classList.add("hidden");
+                }
+            }
+        }
+
+        // Commit modifications to field item config
+        function saveEditedField(fieldId) {
+            const labelVal = document.getElementById(`edit_label_${fieldId}`).value.trim();
+            const reqChecked = document.getElementById(`edit_required_${fieldId}`).checked;
+            const optionsElem = document.getElementById(`edit_options_${fieldId}`);
+
+            if (!labelVal) {
+                showNotification("質問のタイトルは必須項目です", "error");
+                return;
+            }
+
+            const fieldIndex = appState.fields.findIndex(f => f.id === fieldId);
+            if (fieldIndex !== -1) {
+                const targetField = appState.fields[fieldIndex];
+                targetField.label = labelVal;
+                targetField.required = reqChecked;
+
+                // If element has dynamic options
+                if (optionsElem) {
+                    const parsedOpts = optionsElem.value.split(",").map(o => o.trim()).filter(o => o !== "");
+                    if (parsedOpts.length === 0) {
+                        showNotification("選択肢を1つ以上入力してください", "error");
+                        return;
+                    }
+                    targetField.options = parsedOpts;
+                }
+
+                saveStateToStorage();
+                renderAdminFieldsList();
+                renderCustomFields();
+                showNotification("質問の変更を適用しました", "success");
+            }
+        }
+
+        // Reorder questions
+        function moveField(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= appState.fields.length) return;
+
+            const temp = appState.fields[index];
+            appState.fields[index] = appState.fields[targetIndex];
+            appState.fields[targetIndex] = temp;
+
+            saveStateToStorage();
+            renderAdminFieldsList();
+            renderCustomFields();
+        }
+
+        // Delete field
+        function deleteField(fieldId) {
+            const confirmBox = document.createElement("div");
+            confirmBox.className = "fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-sm flex items-center justify-center p-4";
+            confirmBox.innerHTML = `
+                <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 animate-in zoom-in duration-150">
+                    <h3 class="font-bold text-slate-900 text-lg">質問の削除</h3>
+                    <p class="text-sm text-slate-500">この質問項目を本当に削除しますか？送信履歴のデータは消えませんが、新規の入力フォームには表示されなくなります。</p>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button id="cancelDelBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2 rounded-xl text-xs transition">キャンセル</button>
+                        <button id="confirmDelBtn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs transition">削除する</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmBox);
+
+            document.getElementById("cancelDelBtn").onclick = () => confirmBox.remove();
+            document.getElementById("confirmDelBtn").onclick = () => {
+                appState.fields = appState.fields.filter(f => f.id !== fieldId);
+                saveStateToStorage();
+                renderAdminFieldsList();
+                renderCustomFields();
+                confirmBox.remove();
+                showNotification("項目を削除しました", "success");
+            };
+        }
+
+        // Submissions Log Table rendering
+        function renderSubmissionsTable() {
+            const headerRow = document.getElementById("submissionsTableHead");
+            const body = document.getElementById("submissionsTableBody");
+            const emptyState = document.getElementById("emptySubmissionsState");
+
+            headerRow.innerHTML = `
+                <th class="p-3 font-bold text-slate-600 border-r border-slate-200 whitespace-nowrap min-w-[120px]">送信日時</th>
+                <th class="p-3 font-bold text-slate-600 border-r border-slate-200 whitespace-nowrap min-w-[80px]">医院</th>
+                <th class="p-3 font-bold text-slate-600 border-r border-slate-200 whitespace-nowrap min-w-[100px]">氏名</th>
+            `;
+
+            appState.fields.forEach(field => {
+                const th = document.createElement("th");
+                th.className = "p-3 font-bold text-slate-600 border-r border-slate-200 min-w-[120px]";
+                th.innerText = field.label;
+                headerRow.appendChild(th);
+            });
+
+            // Action delete col
+            const actTh = document.createElement("th");
+            actTh.className = "p-3 font-bold text-slate-600 whitespace-nowrap";
+            actTh.innerText = "操作";
+            headerRow.appendChild(actTh);
+
+            body.innerHTML = "";
+            const submissions = appState.submissions || [];
+
+            if (submissions.length === 0) {
+                emptyState.classList.remove("hidden");
+                return;
+            } else {
+                emptyState.classList.add("hidden");
+            }
+
+            submissions.forEach(entry => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50 transition";
+
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-500 border-r border-slate-200 font-medium whitespace-nowrap">${entry.timestamp}</td>
+                    <td class="p-3 font-bold text-slate-700 border-r border-slate-200 whitespace-nowrap">${entry.clinic}</td>
+                    <td class="p-3 font-bold text-indigo-600 border-r border-slate-200 whitespace-nowrap">${entry.name}</td>
+                `;
+
+                appState.fields.forEach(field => {
+                    const td = document.createElement("td");
+                    td.className = "p-3 text-slate-600 border-r border-slate-200 text-[11px] max-w-[250px] truncate whitespace-normal";
+                    
+                    const answer = entry.answers[field.id];
+                    if (Array.isArray(answer)) {
+                        td.innerText = answer.join(", ");
+                    } else {
+                        td.innerText = answer || "";
+                    }
+                    tr.appendChild(td);
+                });
+
+                const delTd = document.createElement("td");
+                delTd.className = "p-2 text-center";
+                delTd.innerHTML = `
+                    <button onclick="deleteSubmission(${entry.id})" class="w-7 h-7 bg-rose-50 hover:bg-rose-100 text-rose-500 border border-rose-200 rounded-md transition flex items-center justify-center mx-auto">
+                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                    </button>
+                `;
+                tr.appendChild(delTd);
+
+                body.appendChild(tr);
+            });
+        }
+
+        // Delete single entry from history log
+        function deleteSubmission(id) {
+            const confirmBox = document.createElement("div");
+            confirmBox.className = "fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-sm flex items-center justify-center p-4";
+            confirmBox.innerHTML = `
+                <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 animate-in zoom-in duration-150">
+                    <h3 class="font-bold text-slate-900 text-lg">提出データの削除</h3>
+                    <p class="text-sm text-slate-500">この提出された意見ログを履歴から永久に削除しますか？</p>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button id="cancelSubDelBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2 rounded-xl text-xs transition">キャンセル</button>
+                        <button id="confirmSubDelBtn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs transition">削除する</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmBox);
+
+            document.getElementById("cancelSubDelBtn").onclick = () => confirmBox.remove();
+            document.getElementById("confirmSubDelBtn").onclick = () => {
+                appState.submissions = appState.submissions.filter(s => s.id !== id);
+                saveStateToStorage();
+                renderSubmissionsTable();
+                confirmBox.remove();
+                showNotification("送信履歴を1件削除しました", "success");
+            };
+        }
+
+        // Clear entire DB
+        function clearAllSubmissions() {
+            const confirmBox = document.createElement("div");
+            confirmBox.className = "fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-sm flex items-center justify-center p-4";
+            confirmBox.innerHTML = `
+                <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 animate-in zoom-in duration-150">
+                    <h3 class="font-bold text-rose-600 text-lg">⚠️ 全提出データの削除</h3>
+                    <p class="text-sm text-slate-500">これまでに蓄積されたすべての意見データを完全にリセットします。この操作は戻せません。本当によろしいですか？</p>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button id="cancelAllDelBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2 rounded-xl text-xs transition">キャンセル</button>
+                        <button id="confirmAllDelBtn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs transition">すべて削除する</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmBox);
+
+            document.getElementById("cancelAllDelBtn").onclick = () => confirmBox.remove();
+            document.getElementById("confirmAllDelBtn").onclick = () => {
+                appState.submissions = [];
+                saveStateToStorage();
+                renderSubmissionsTable();
+                confirmBox.remove();
+                showNotification("全ての送信履歴を削除しました", "success");
+            };
+        }
+
+        // Save GAS setup URL
+        function saveGasSettings() {
+            const urlInput = document.getElementById("gasUrlInput").value.trim();
+            appState.gasURL = urlInput;
+            saveStateToStorage();
+            updateGasStatusBadge();
+            showNotification("Googleスプレッドシート連携URLを保存しました", "success");
+        }
+
+        // Refresh cloud link state indicator badge
+        function updateGasStatusBadge() {
+            const badge = document.getElementById("gasStatusBadge");
+            if (appState.gasURL && appState.gasURL.trim() !== "") {
+                badge.classList.remove("hidden", "bg-amber-50", "text-amber-700");
+                badge.classList.add("bg-emerald-50", "text-emerald-700");
+                badge.innerHTML = `<i class="fa-solid fa-cloud-check mr-1"></i> スプレッドシート連携稼働中`;
+            } else {
+                badge.classList.remove("hidden", "bg-emerald-50", "text-emerald-700");
+                badge.classList.add("bg-amber-50", "text-amber-700");
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> 未連携（ローカル保存のみ）`;
+            }
+        }
+
+        // Helper to copy script code to user clipboard securely
+        function copyGasScriptToClipboard() {
+            const textToCopy = document.getElementById("gasScriptBlock").value;
+            
+            // Fallback for iFrame restrictions
+            const tempTextarea = document.createElement("textarea");
+            tempTextarea.value = textToCopy;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+            
+            showNotification("GASコードをクリップボードにコピーしました！", "success");
+        }
+
+        // Change security lock PIN
+        function changeAdminPasscode() {
+            const currentPin = document.getElementById("currentPasscodeCheck").value;
+            const newPin = document.getElementById("newPasscodeVal").value.trim();
+            const newPinConfirm = document.getElementById("newPasscodeConfirmVal").value.trim();
+
+            if (currentPin !== appState.adminPIN) {
+                showNotification("現在のパスコードが間違っています", "error");
+                return;
+            }
+
+            if (!newPin) {
+                showNotification("新しいパスコードを入力してください", "error");
+                return;
+            }
+
+            if (newPin !== newPinConfirm) {
+                showNotification("新しいパスコード(確認)と一致しません", "error");
+                return;
+            }
+
+            // Apply modifications
+            appState.adminPIN = newPin;
+            saveStateToStorage();
+
+            // Clear fields
+            document.getElementById("currentPasscodeCheck").value = "";
+            document.getElementById("newPasscodeVal").value = "";
+            document.getElementById("newPasscodeConfirmVal").value = "";
+
+            showNotification("パスコードを変更しました", "success");
+        }
+
+        // CSV Export Function (Excel compatible UTF-8 with BOM)
+        function exportToCSV() {
+            if (!appState.submissions || appState.submissions.length === 0) {
+                showNotification("エクスポートするデータがありません", "error");
+                return;
+            }
+
+            const headers = ["送信日時", "所属医院", "職員名"];
+            appState.fields.forEach(f => {
+                headers.push(f.label);
+            });
+
+            const csvRows = [];
+            csvRows.push(headers.join(","));
+
+            appState.submissions.forEach(entry => {
+                const values = [
+                    escapeCSVValue(entry.timestamp),
+                    escapeCSVValue(entry.clinic),
+                    escapeCSVValue(entry.name)
+                ];
+
+                appState.fields.forEach(field => {
+                    const ans = entry.answers[field.id];
+                    if (Array.isArray(ans)) {
+                        values.push(escapeCSVValue(ans.join(", ")));
+                    } else {
+                        values.push(escapeCSVValue(ans || ""));
+                    }
+                });
+
+                csvRows.push(values.join(","));
+            });
+
+            const csvContent = "\ufeff" + csvRows.join("\n");
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            
+            const todayStr = new Date().toISOString().substring(0, 10);
+            link.setAttribute("download", `月山会_ご意見フォームデータ_${todayStr}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showNotification("CSVをエクスポートしました", "success");
+        }
+
+        function escapeCSVValue(value) {
+            if (value === null || value === undefined) return '""';
+            let str = String(value);
+            if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
+                str = str.replace(/"/g, '""');
+                return `"${str}"`;
+            }
+            return `"${str}"`;
+        }
+    </script>
+</body>
+</html>
